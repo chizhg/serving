@@ -94,17 +94,17 @@ func NewClients(configPath string, clusterName string, namespace string) (*Clien
 		return nil, err
 	}
 
-	clients.ServingAlphaClient, err = newServingAlphaClients(cfg, namespace)
+	clients.ServingAlphaClient, err = NewServingAlphaClients(cfg, namespace)
 	if err != nil {
 		return nil, err
 	}
 
-	clients.ServingBetaClient, err = newServingBetaClients(cfg, namespace)
+	clients.ServingBetaClient, err = NewServingBetaClients(cfg, namespace)
 	if err != nil {
 		return nil, err
 	}
 
-	clients.ServingClient, err = newServingClients(cfg, namespace)
+	clients.ServingClient, err = NewServingClients(cfg, namespace)
 	if err != nil {
 		return nil, err
 	}
@@ -119,7 +119,7 @@ func NewClients(configPath string, clusterName string, namespace string) (*Clien
 		return nil, err
 	}
 
-	clients.NetworkingClient, err = newNetworkingClients(cfg, namespace)
+	clients.NetworkingClient, err = NewNetworkingClients(cfg, namespace)
 	if err != nil {
 		return nil, err
 	}
@@ -127,9 +127,9 @@ func NewClients(configPath string, clusterName string, namespace string) (*Clien
 	return clients, nil
 }
 
-// newNetworkingClients instantiates and returns the networking clientset required to make requests
+// NewNetworkingClients instantiates and returns the networking clientset required to make requests
 // to Networking resources on the Knative service cluster
-func newNetworkingClients(cfg *rest.Config, namespace string) (*NetworkingClients, error) {
+func NewNetworkingClients(cfg *rest.Config, namespace string) (*NetworkingClients, error) {
 	cs, err := versioned.NewForConfig(cfg)
 	if err != nil {
 		return nil, err
@@ -141,7 +141,7 @@ func newNetworkingClients(cfg *rest.Config, namespace string) (*NetworkingClient
 
 // NewServingAlphaClients instantiates and returns the serving clientset required to make requests to the
 // knative serving cluster.
-func newServingAlphaClients(cfg *rest.Config, namespace string) (*ServingAlphaClients, error) {
+func NewServingAlphaClients(cfg *rest.Config, namespace string) (*ServingAlphaClients, error) {
 	cs, err := versioned.NewForConfig(cfg)
 	if err != nil {
 		return nil, err
@@ -157,7 +157,7 @@ func newServingAlphaClients(cfg *rest.Config, namespace string) (*ServingAlphaCl
 
 // NewServingBetaClients instantiates and returns the serving clientset required to make requests to the
 // knative serving cluster.
-func newServingBetaClients(cfg *rest.Config, namespace string) (*ServingBetaClients, error) {
+func NewServingBetaClients(cfg *rest.Config, namespace string) (*ServingBetaClients, error) {
 	cs, err := versioned.NewForConfig(cfg)
 	if err != nil {
 		return nil, err
@@ -173,7 +173,7 @@ func newServingBetaClients(cfg *rest.Config, namespace string) (*ServingBetaClie
 
 // NewServingClients instantiates and returns the serving clientset required to make requests to the
 // knative serving cluster.
-func newServingClients(cfg *rest.Config, namespace string) (*ServingClients, error) {
+func NewServingClients(cfg *rest.Config, namespace string) (*ServingClients, error) {
 	cs, err := versioned.NewForConfig(cfg)
 	if err != nil {
 		return nil, err
