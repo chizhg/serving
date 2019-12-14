@@ -25,6 +25,7 @@ import (
 	"k8s.io/apimachinery/pkg/labels"
 
 	"knative.dev/pkg/signals"
+	"knative.dev/pkg/test/cmd"
 	"knative.dev/pkg/test/mako"
 )
 
@@ -36,6 +37,11 @@ var (
 )
 
 func main() {
+	if _, err := cmd.RunCommand("docker run --name=mako-storage -v $GOOGLE_APPLICATION_CREDENTIALS:/root/adc.json -e 'GOOGLE_APPLICATION_CREDENTIALS=/root/adc.json' -p 9813:9813 gcr.io/knative-performance/mako-microservice:latest"); err != nil {
+		log.Fatalf("failed to start mako microservice")
+	}
+	defer cmd.RunCommand("docker container rm -f mako-storage")
+
 	flag.Parse()
 
 	if *flavor == "" {
