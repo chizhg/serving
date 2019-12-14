@@ -19,7 +19,9 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"log"
+	"os"
 	"time"
 
 	"k8s.io/apimachinery/pkg/labels"
@@ -32,21 +34,18 @@ import (
 const namespace = "default"
 
 var (
-	flavor   = flag.String("flavor", "", "The flavor of the benchmark to run.")
 	selector labels.Selector
 )
 
 func main() {
-	if _, err := cmd.RunCommand("docker run --name=mako-storage -v $GOOGLE_APPLICATION_CREDENTIALS:/root/adc.json -e 'GOOGLE_APPLICATION_CREDENTIALS=/root/adc.json' -p 9813:9813 gcr.io/knative-performance/mako-microservice:latest"); err != nil {
-		log.Fatalf("failed to start mako microservice")
+	key := os.Getenv("GOOGLE_APPLICATION_CREDENTIALS")
+	if _, err := cmd.RunCommand(fmt.Sprintf("docker run --name=mako-storage -d -v %s:/root/adc.json -e 'GOOGLE_APPLICATION_CREDENTIALS=/root/adc.json' -p 9813:9813 gcr.io/knative-performance/mako-microservice:latest", key)); err != nil {
+		cmd.RunCommand("docker container rm -f mako-storage")
+		log.Fatalf("failed to start mako microservice: %v", err)
 	}
 	defer cmd.RunCommand("docker container rm -f mako-storage")
 
 	flag.Parse()
-
-	if *flavor == "" {
-		log.Fatalf("-flavor is a required flag.")
-	}
 
 	// We want this for properly handling Kubernetes container lifecycle events.
 	ctx := signals.NewContext()
@@ -56,8 +55,7 @@ func main() {
 	defer cancel()
 
 	// Use the benchmark key created.
-	tbcTag := "tbc=" + *flavor
-	mc, err := mako.Setup(ctx, tbcTag)
+	mc, err := mako.Setup(ctx)
 	if err != nil {
 		log.Fatalf("failed to setup mako: %v", err)
 	}
@@ -73,8 +71,8 @@ func main() {
 	}
 
 	q.AddSamplePoint(mako.XTime(time.Now()), map[string]float64{
-		"dp": float64(1),
-		"ap": float64(1),
+		"dp": float64(2),
+		"ap": float64(2),
 	})
 
 	if err := mc.StoreAndHandleResult(); err != nil {

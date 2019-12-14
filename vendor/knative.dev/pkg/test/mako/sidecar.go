@@ -18,22 +18,12 @@ package mako
 
 import (
 	"context"
-	"fmt"
-	"log"
 	"path/filepath"
 	"runtime"
 	"strings"
 
-	"cloud.google.com/go/compute/metadata"
-	kubeclient "knative.dev/pkg/client/injection/kube/client"
-
 	"github.com/google/mako/go/quickstore"
 	qpb "github.com/google/mako/proto/quickstore/quickstore_go_proto"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/rest"
-	"knative.dev/pkg/changeset"
-	"knative.dev/pkg/controller"
-	"knative.dev/pkg/injection"
 	"knative.dev/pkg/test/mako/alerter"
 	"knative.dev/pkg/test/mako/config"
 )
@@ -87,61 +77,12 @@ func EscapeTag(tag string) string {
 // It returns the mako client handle to store metrics, a method to close the connection
 // to mako server once done and error in case of failures.
 func SetupHelper(ctx context.Context, benchmarkKey *string, benchmarkName *string, extraTags ...string) (*Client, error) {
-	tags := append(config.MustGetTags(), extraTags...)
-	// Get the commit of the benchmarks
-	commitID, err := changeset.Get()
-	if err != nil {
-		return nil, err
-	}
-
-	// Setup a deployment informer, so that we can use the lister to track
-	// desired and available pod counts.
-	cfg, err := rest.InClusterConfig()
-	if err != nil {
-		return nil, err
-	}
-	ctx, informers := injection.Default.SetupInformers(ctx, cfg)
-	if err := controller.StartInformers(ctx.Done(), informers...); err != nil {
-		return nil, err
-	}
-
-	// Get the Kubernetes version from the API server.
-	kc := kubeclient.Get(ctx)
-	version, err := kc.Discovery().ServerVersion()
-	if err != nil {
-		return nil, err
-	}
-
-	// Determine the number of Kubernetes nodes through the kubernetes client.
-	nodes, err := kc.CoreV1().Nodes().List(metav1.ListOptions{})
-	if err != nil {
-		return nil, err
-	}
-	tags = append(tags, "nodes="+fmt.Sprintf("%d", len(nodes.Items)))
-
-	// Decorate GCP metadata as tags (when we're running on GCP).
-	if projectID, err := metadata.ProjectID(); err != nil {
-		log.Printf("GCP project ID is not available: %v", err)
-	} else {
-		tags = append(tags, "project-id="+EscapeTag(projectID))
-	}
-	if zone, err := metadata.Zone(); err != nil {
-		log.Printf("GCP zone is not available: %v", err)
-	} else {
-		tags = append(tags, "zone="+EscapeTag(zone))
-	}
-	if machineType, err := metadata.Get("instance/machine-type"); err != nil {
-		log.Printf("GCP machine type is not available: %v", err)
-	} else if parts := strings.Split(machineType, "/"); len(parts) != 4 {
-		tags = append(tags, "instanceType="+EscapeTag(parts[3]))
-	}
+	tags := make([]string, 0)
 
 	// Create a new Quickstore that connects to the microservice
 	qs, qclose, err := quickstore.NewAtAddress(ctx, &qpb.QuickstoreInput{
 		BenchmarkKey: benchmarkKey,
 		Tags: append(tags,
-			"commit="+commitID,
-			"kubernetes="+EscapeTag(version.String()),
 			EscapeTag(runtime.Version()),
 		),
 	}, sidecarAddress)
@@ -176,8 +117,9 @@ func SetupHelper(ctx context.Context, benchmarkKey *string, benchmarkName *strin
 }
 
 func Setup(ctx context.Context, extraTags ...string) (*Client, error) {
-	bench := config.MustGetBenchmark()
-	return SetupHelper(ctx, bench.BenchmarkKey, bench.BenchmarkName, extraTags...)
+	// bench := config.MustGetBenchmark()
+	bk, bn := "6297841731371008", "Development - Serving load testing"
+	return SetupHelper(ctx, &bk, &bn, extraTags...)
 }
 
 func tokenPath(token string) string {
