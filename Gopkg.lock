@@ -566,6 +566,14 @@
   revision = "f2b4162afba35581b6d4a50d3b8f34e33c144682"
 
 [[projects]]
+  branch = "master"
+  digest = "1:cf68a79fd02ab0f6942b9567d03d054b6568212fcc22de2a4afdefd096923749"
+  name = "github.com/kballard/go-shellquote"
+  packages = ["."]
+  pruneopts = "NUT"
+  revision = "95032a82bc518f77982ea72343cc1ade730072f0"
+
+[[projects]]
   digest = "1:08c58ac78a8c1f61e9a96350066d30fe194b8779799bd932a79932a5166a173f"
   name = "github.com/kelseyhightower/envconfig"
   packages = ["."]
@@ -1797,6 +1805,7 @@
     "system",
     "system/testing",
     "test",
+    "test/cmd",
     "test/ghutil",
     "test/gke",
     "test/helpers",
@@ -1812,7 +1821,6 @@
     "test/prometheus",
     "test/slackutil",
     "test/spoof",
-    "test/vegeta/pacers",
     "test/webhook-apicoverage/coveragecalculator",
     "test/webhook-apicoverage/resourcetree",
     "test/webhook-apicoverage/tools",
@@ -1900,6 +1908,7 @@
     "github.com/google/mako/spec/proto/mako_go_proto",
     "github.com/gorilla/websocket",
     "github.com/jetstack/cert-manager/pkg/apis/certmanager/v1alpha1",
+    "github.com/kballard/go-shellquote",
     "github.com/kelseyhightower/envconfig",
     "github.com/kubernetes-incubator/custom-metrics-apiserver/pkg/cmd",
     "github.com/kubernetes-incubator/custom-metrics-apiserver/pkg/provider",
@@ -2051,6 +2060,7 @@
     "knative.dev/pkg/system",
     "knative.dev/pkg/system/testing",
     "knative.dev/pkg/test",
+    "knative.dev/pkg/test/cmd",
     "knative.dev/pkg/test/helpers",
     "knative.dev/pkg/test/ingress",
     "knative.dev/pkg/test/logging",
@@ -2058,7 +2068,6 @@
     "knative.dev/pkg/test/mako",
     "knative.dev/pkg/test/prometheus",
     "knative.dev/pkg/test/spoof",
-    "knative.dev/pkg/test/vegeta/pacers",
     "knative.dev/pkg/test/webhook-apicoverage/coveragecalculator",
     "knative.dev/pkg/test/webhook-apicoverage/resourcetree",
     "knative.dev/pkg/test/webhook-apicoverage/tools",

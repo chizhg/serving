@@ -17,7 +17,9 @@ required = [
   "knative.dev/test-infra/scripts",
   "knative.dev/test-infra/tools/dep-collector",
   # For load testing.
-  "github.com/tsenart/vegeta"
+  "github.com/tsenart/vegeta",
+  # For pkg/test/cmd.
+  "github.com/kballard/go-shellquote"
 ]
 
 [[constraint]]
