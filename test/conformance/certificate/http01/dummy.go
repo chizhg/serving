@@ -1,3 +1,3 @@
-// +build e2e
+// +build require
 
 package http01
